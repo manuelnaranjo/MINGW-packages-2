@@ -1,0 +1,56 @@
+# Maintainer: Manuel Naranjo <naranjo.manuel@gmail.com>
+
+_realname=pyserial
+pkgbase=mingw-w64-python-${_realname}
+pkgname=("${MINGW_PACKAGE_PREFIX}-python2-${_realname}" "${MINGW_PACKAGE_PREFIX}-python3-${_realname}")
+pkgver=3.1.1
+pkgrel=1
+pkgdesc='Python Serial Port Extension (mingw-w64)'
+url='https://github.com/pyserial/pyserial'
+license=('BSD')
+arch=('any')
+makedepends=("${MINGW_PACKAGE_PREFIX}-python2"
+             "${MINGW_PACKAGE_PREFIX}-python3")
+source=("https://pypi.python.org/packages/3c/d8/a9fa247ca60b02b3bebbd61766b4f321393b57b13c53b18f6f62cf172c08/${_realname}-${pkgver}.tar.gz")
+sha256sums=('d657051249ce3cbd0446bcfb2be07a435e1029da4d63f53ed9b4cdde7373364c')
+
+
+prepare() {
+  cd ${srcdir}
+  cp -r ${_realname}-${pkgver} build-python2
+  cp -r ${_realname}-${pkgver} build-python3
+}
+
+package_python3-pyserial() {
+  cd ${srcdir}/build-python3
+  ${MINGW_PREFIX}/bin/python3 setup.py build
+  MSYS2_ARG_CONV_EXCL="--prefix=;--install-scripts=;--install-platlib=" \
+  ${MINGW_PREFIX}/bin/python3 setup.py install --prefix=${MINGW_PREFIX} --root="${pkgdir}"
+
+  install -Dm644 "${srcdir}/${_realname}-${pkgver}/LICENSE.txt" "${pkgdir}${MINGW_PREFIX}/share/licenses/python3-${_realname}/LICENSE"
+}
+
+package_python2-pyserial() {
+  cd ${srcdir}/build-python2
+  ${MINGW_PREFIX}/bin/python2 setup.py build
+  MSYS2_ARG_CONV_EXCL="--prefix=;--install-scripts=;--install-platlib=" \
+  ${MINGW_PREFIX}/bin/python2 setup.py install --prefix=${MINGW_PREFIX} --root="${pkgdir}"
+
+  install -Dm644 "${srcdir}/${_realname}-${pkgver}/LICENSE.txt" "${pkgdir}${MINGW_PREFIX}/share/licenses/python2-${_realname}/LICENSE"
+}
+
+package_mingw-w64-i686-python2-pyserial() {
+  package_python2-pyserial
+}
+
+package_mingw-w64-i686-python3-pyserial() {
+  package_python3-pyserial
+}
+
+package_mingw-w64-x86_64-python2-pyserial() {
+  package_python2-pyserial
+}
+
+package_mingw-w64-x86_64-python3-pyserial() {
+  package_python3-pyserial
+}
