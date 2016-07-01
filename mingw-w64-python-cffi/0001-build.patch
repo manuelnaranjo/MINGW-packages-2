@@ -1,0 +1,77 @@
+diff -upr --ignore-space-change cffi-1.7.0/c/_cffi_backend.c python2-build/c/_cffi_backend.c
+--- cffi-1.7.0/c/_cffi_backend.c	2016-06-20 11:30:45.000000000 -0300
++++ python2-build/c/_cffi_backend.c	2016-07-01 15:59:31.000000000 -0300
+@@ -4,17 +4,14 @@
+ 
+ #define CFFI_VERSION  "1.7.0"
+ 
+-#ifdef MS_WIN32
+ #include <windows.h>
+ #include "misc_win32.h"
+-#else
+ #include <stddef.h>
+ #include <stdint.h>
+ #include <dlfcn.h>
+ #include <errno.h>
+ #include <ffi.h>
+ #include <sys/mman.h>
+-#endif
+ 
+ /* this block of #ifs should be kept exactly identical between
+    c/_cffi_backend.c, cffi/vengine_cpy.py, cffi/vengine_gen.py */
+diff -upr --ignore-space-change cffi-1.7.0/c/misc_win32.h python2-build/c/misc_win32.h
+--- cffi-1.7.0/c/misc_win32.h	2016-06-20 11:30:45.000000000 -0300
++++ python2-build/c/misc_win32.h	2016-07-01 16:00:35.000000000 -0300
+@@ -219,7 +219,7 @@ static void *dlsym(void *handle, const c
+ #endif
+     return address;
+ }
+-
++/*
+ static int dlclose(void *handle)
+ {
+     return FreeLibrary((HMODULE)handle) ? 0 : -1;
+@@ -234,8 +234,9 @@ static const char *dlerror(void)
+     sprintf(buf, "error 0x%x", (unsigned int)dw);
+     return buf;
+ }
++*/
+ 
+ /************************************************************/
+ /* obscure */
+ 
+-#define ffi_prep_closure(a,b,c,d)  ffi_prep_closure_loc(a,b,c,d,a)
++//#define ffi_prep_closure(a,b,c,d)  ffi_prep_closure_loc(a,b,c,d,a)
+diff -upr --ignore-space-change cffi-1.7.0/setup.py python2-build/setup.py
+--- cffi-1.7.0/setup.py	2016-06-20 11:30:45.000000000 -0300
++++ python2-build/setup.py	2016-07-01 16:01:15.000000000 -0300
+@@ -86,10 +86,7 @@ def use_homebrew_for_libffi():
+         os.environ.get('PKG_CONFIG_PATH', '') + ':' + pkgconfig)
+ 
+ 
+-if sys.platform == 'win32':
+-    COMPILE_LIBFFI = 'c/libffi_msvc'    # from the CPython distribution
+-else:
+-    COMPILE_LIBFFI = None
++COMPILE_LIBFFI = None
+ 
+ if COMPILE_LIBFFI:
+     assert os.path.isdir(COMPILE_LIBFFI), "directory not found!"
+@@ -108,7 +105,7 @@ if COMPILE_LIBFFI:
+                    for filename in _filenames)
+ else:
+     use_pkg_config()
+-    ask_supports_thread()
++    #ask_supports_thread()
+ 
+ if 'freebsd' in sys.platform:
+     include_dirs.append('/usr/local/include')
+@@ -162,7 +159,7 @@ Contact
+             name='_cffi_backend',
+             include_dirs=include_dirs,
+             sources=sources,
+-            libraries=libraries,
++            libraries=libraries + ['dl'],
+             define_macros=define_macros,
+             library_dirs=library_dirs,
+             extra_compile_args=extra_compile_args,
