@@ -1,0 +1,69 @@
+# Contributor: Naranjo Manuel <naranjo.manuel@gmail.com>
+
+_realname=apsw
+pkgbase=mingw-w64-python-${_realname}
+pkgname=("${MINGW_PACKAGE_PREFIX}-python2-${_realname}" "${MINGW_PACKAGE_PREFIX}-python3-${_realname}")
+pkgver=3.12.2
+pkgrevision=r1
+_pkgver=${pkgver}-${pkgrevision}
+pkgrel=1
+pkgdesc='APSW stands for Another Python SQLite Wrapper (mingw-w64)'
+arch=('any')
+url='https://github.com/rogerbinns/apsw'
+license=('BSD')
+makedepends=("${MINGW_PACKAGE_PREFIX}-python3"
+             "${MINGW_PACKAGE_PREFIX}-python2"
+             "${MINGW_PACKAGE_PREFIX}-sqlite3")
+source=("https://github.com/rogerbinns/${_realname}/releases/download/${_pkgver}/${_realname}-${_pkgver}.zip"
+        'LICENSE.txt')
+sha256sums=('99224ad3a5e057eaf2bb7a9bcd9e189a60fba1e82bf01aa9d0e501bec9be395e'
+            '5b9ce45798bed15a0201049c141159c53cf040d59d7223f19a95d16843fe4dbc')
+noextract=(${_realname}-${_pkgver}.zip)
+
+prepare() {
+  [[ -d ${srcdir}/${_realname}-${_pkgver} ]] && rm -rf ${srcdir}/${_realname}-${_pkgver}
+  mkdir -p ${srcdir}
+  cd ${srcdir}
+  unzip ${_realname}-${_pkgver}.zip || true
+
+  cp -r ${_realname}-${_pkgver} python2-build
+  cp -r ${_realname}-${_pkgver} python3-build
+}
+
+package_python3-apsw() {
+  depends=("${MINGW_PACKAGE_PREFIX}-python3")
+
+  cd ${srcdir}/python3-build
+  MSYS2_ARG_CONV_EXCL="--prefix=;--install-scripts=;--install-platlib=" \
+  ${MINGW_PREFIX}/bin/python3 setup.py install --prefix=${MINGW_PREFIX} \
+    --root="${pkgdir}" --optimize=1
+
+  install -Dm644 ../LICENSE.txt "${pkgdir}${MINGW_PREFIX}/share/licenses/python3-${_realname}/LICENSE"
+}
+
+package_python2-apsw() {
+  depends=("${MINGW_PACKAGE_PREFIX}-python2")
+
+  cd ${srcdir}/python2-build
+  MSYS2_ARG_CONV_EXCL="--prefix=;--install-scripts=;--install-platlib=" \
+  ${MINGW_PREFIX}/bin/python2 setup.py install --prefix=${MINGW_PREFIX} \
+    --root="${pkgdir}" --optimize=1
+
+  install -Dm644 ../LICENSE.txt "${pkgdir}${MINGW_PREFIX}/share/licenses/python2-${_realname}/LICENSE"
+}
+
+package_mingw-w64-i686-python2-apsw() {
+  package_python2-apsw
+}
+
+package_mingw-w64-i686-python3-apsw() {
+  package_python3-apsw
+}
+
+package_mingw-w64-x86_64-python2-apsw() {
+  package_python2-apsw
+}
+
+package_mingw-w64-x86_64-python3-apsw() {
+  package_python3-apsw
+}
