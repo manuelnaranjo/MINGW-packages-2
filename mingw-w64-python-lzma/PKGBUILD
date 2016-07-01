@@ -1,0 +1,42 @@
+# Contributor: Naranjo Manuel <naranjo.manuel@gmail.com>
+
+_realname=backports.lzma
+pkgbase=mingw-w64-python-lzma
+pkgname=("${MINGW_PACKAGE_PREFIX}-python2-lzma")
+pkgver=0.0.6
+pkgrel=1
+pkgdesc="Backport of Python 3.3's 'lzma' module for XZ/LZMA compressed files (mingw-w64)"
+arch=('any')
+url='https://github.com/peterjc/backports.lzma'
+license=('BSD')
+makedepends=("${MINGW_PACKAGE_PREFIX}-python2"
+             "${MINGW_PACKAGE_PREFIX}-xz")
+source=("https://github.com/peterjc/${_realname}/archive/${_realname}.v${pkgver}.zip"
+        'LICENSE.txt'
+        '0000-setup-py-no-symbols.patch')
+sha256sums=('3b839226f344f4456f36b0ae480b321db55f09f7cdd6f9a4957b13523a3790b6'
+            '163ee8334efe8b30460d703acef1f2fb6e7a57ce0b85571561ee75d6f9421764'
+            '10d93c342434ad475f456fe4a2d2659e722c7dc7e9f7fd7d98299bad22154316')
+
+package_python2-lzma() {
+  depends=("${MINGW_PACKAGE_PREFIX}-python2")
+
+  cd ${_realname}-${_realname}.v${pkgver}
+  patch -p0 < ${srcdir}/0000-setup-py-no-symbols.patch
+  MSYS2_ARG_CONV_EXCL="--prefix=;--install-scripts=;--install-platlib=" \
+  ${MINGW_PREFIX}/bin/python2 setup.py install --prefix=${MINGW_PREFIX} \
+    --root="${pkgdir}" --optimize=1
+
+  install -Dm644 ../LICENSE.txt "${pkgdir}${MINGW_PREFIX}/share/licenses/python2-${_realname}/LICENSE"
+  rm "${pkgdir}${MINGW_PREFIX}"/lib/python2.7/site-packages/backports/__init__.py*
+  mv "${pkgdir}${MINGW_PREFIX}"/lib/python2.7/site-packages/backports/lzma "${pkgdir}${MINGW_PREFIX}"/lib/python2.7/site-packages/
+  rmdir "${pkgdir}${MINGW_PREFIX}"/lib/python2.7/site-packages/backports/
+}
+
+package_mingw-w64-i686-python2-lzma() {
+  package_python2-lzma
+}
+
+package_mingw-w64-x86_64-python2-lzma() {
+  package_python2-lzma
+}
