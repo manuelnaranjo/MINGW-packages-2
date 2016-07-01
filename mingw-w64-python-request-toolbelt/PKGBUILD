@@ -1,0 +1,55 @@
+# Maintainer: Manuel Naranjo <naranjo.manuel@gmail.com>
+
+_realname=requests-toolbelt
+pkgbase=mingw-w64-python-${_realname}
+pkgname=("${MINGW_PACKAGE_PREFIX}-python2-${_realname}" "${MINGW_PACKAGE_PREFIX}-python3-${_realname}")
+pkgver=0.6.2
+pkgrel=1
+pkgdesc='A utility belt for advanced users of python-requests (mingw-w64)'
+url="https://github.com/sigmavirus24/${_realname}"
+license=('Apache License 2.0')
+arch=('any')
+makedepends=("${MINGW_PACKAGE_PREFIX}-python2"
+             "${MINGW_PACKAGE_PREFIX}-python3")
+source=("${url}/archive/${pkgver}.tar.gz")
+sha256sums=('192858220ee7021a6885e1525f21bb902cab2a25f9611d245ea95bd0b1584137')
+
+prepare() {
+  cd ${srcdir}
+  cp -r ${_realname}-${pkgver} build-python2
+  cp -r ${_realname}-${pkgver} build-python3
+}
+
+package_python3-requests-toolbelt() {
+  cd ${srcdir}/build-python3
+  ${MINGW_PREFIX}/bin/python3 setup.py build
+  MSYS2_ARG_CONV_EXCL="--prefix=;--install-scripts=;--install-platlib=" \
+  ${MINGW_PREFIX}/bin/python3 setup.py install --prefix=${MINGW_PREFIX} --root="${pkgdir}"
+
+  install -Dm644 "LICENSE" "${pkgdir}${MINGW_PREFIX}/share/licenses/python3-${_realname}/LICENSE"
+}
+
+package_python2-requests-toolbelt() {
+  cd ${srcdir}/build-python2
+  ${MINGW_PREFIX}/bin/python2 setup.py build
+  MSYS2_ARG_CONV_EXCL="--prefix=;--install-scripts=;--install-platlib=" \
+  ${MINGW_PREFIX}/bin/python2 setup.py install --prefix=${MINGW_PREFIX} --root="${pkgdir}"
+
+  install -Dm644 "LICENSE" "${pkgdir}${MINGW_PREFIX}/share/licenses/python2-${_realname}/LICENSE"
+}
+
+package_mingw-w64-i686-python2-requests-toolbelt() {
+  package_python2-requests-toolbelt
+}
+
+package_mingw-w64-i686-python3-requests-toolbelt() {
+  package_python3-requests-toolbelt
+}
+
+package_mingw-w64-x86_64-python2-requests-toolbelt() {
+  package_python2-requests-toolbelt
+}
+
+package_mingw-w64-x86_64-python3-requests-toolbelt() {
+  package_python3-requests-toolbelt
+}
