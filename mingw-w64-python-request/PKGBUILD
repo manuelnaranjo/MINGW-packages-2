@@ -1,0 +1,56 @@
+# Maintainer: Manuel Naranjo <naranjo.manuel@gmail.com>
+
+_realname=requests
+pkgbase=mingw-w64-python-${_realname}
+pkgname=("${MINGW_PACKAGE_PREFIX}-python2-${_realname}" "${MINGW_PACKAGE_PREFIX}-python3-${_realname}")
+pkgver=2.10.0
+pkgrel=1
+pkgdesc='Requests: HTTP for Humans (mingw-w64)'
+url='https://github.com/kennethreitz/requests/'
+license=('Apache License 2.0')
+arch=('any')
+makedepends=("${MINGW_PACKAGE_PREFIX}-python2"
+             "${MINGW_PACKAGE_PREFIX}-python3")
+
+source=("https://github.com/kennethreitz/${_realname}/archive/v${pkgver}.zip")
+sha256sums=('0451d90f0f840d8593559e68cd11d420f22ae47a2352ac5c4a925b92eb7e6ebc')
+
+prepare() {
+  cd ${srcdir}
+  cp -r ${_realname}-${pkgver} build-python2
+  cp -r ${_realname}-${pkgver} build-python3
+}
+
+package_python3-requests() {
+  cd ${srcdir}/build-python3
+  ${MINGW_PREFIX}/bin/python3 setup.py build
+  MSYS2_ARG_CONV_EXCL="--prefix=;--install-scripts=;--install-platlib=" \
+  ${MINGW_PREFIX}/bin/python3 setup.py install --prefix=${MINGW_PREFIX} --root="${pkgdir}"
+
+  install -Dm644 "LICENSE" "${pkgdir}${MINGW_PREFIX}/share/licenses/python3-${_realname}/LICENSE"
+}
+
+package_python2-requests() {
+  cd ${srcdir}/build-python2
+  ${MINGW_PREFIX}/bin/python2 setup.py build
+  MSYS2_ARG_CONV_EXCL="--prefix=;--install-scripts=;--install-platlib=" \
+  ${MINGW_PREFIX}/bin/python2 setup.py install --prefix=${MINGW_PREFIX} --root="${pkgdir}"
+
+  install -Dm644 "LICENSE" "${pkgdir}${MINGW_PREFIX}/share/licenses/python2-${_realname}/LICENSE"
+}
+
+package_mingw-w64-i686-python2-requests() {
+  package_python2-requests
+}
+
+package_mingw-w64-i686-python3-requests() {
+  package_python3-requests
+}
+
+package_mingw-w64-x86_64-python2-requests() {
+  package_python2-requests
+}
+
+package_mingw-w64-x86_64-python3-requests() {
+  package_python3-requests
+}
