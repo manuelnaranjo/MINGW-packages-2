@@ -1,0 +1,63 @@
+# Contributor: Naranjo Manuel <naranjo.manuel@gmail.com>
+
+_realname=cffi
+pkgbase=mingw-w64-python-${_realname}
+pkgname=("${MINGW_PACKAGE_PREFIX}-python2-${_realname}" "${MINGW_PACKAGE_PREFIX}-python3-${_realname}")
+pkgver=1.7.0
+pkgrel=1
+pkgdesc='Foreign Function Interface for Python calling C code. (mingw-w64)'
+arch=('any')
+url="https://bitbucket.org/${_realname}/${_realname}"
+license=('MIT')
+makedepends=("${MINGW_PACKAGE_PREFIX}-python3"
+             "${MINGW_PACKAGE_PREFIX}-python2"
+             "${MINGW_PACKAGE_PREFIX}-libffi")
+source=("https://pypi.python.org/packages/83/3c/00b553fd05ae32f27b3637f705c413c4ce71290aa9b4c4764df694e906d9/${_realname}-${pkgver}.tar.gz"
+        '0001-build.patch')
+sha256sums=('6ed5dd6afd8361f34819c68aaebf9e8fc12b5a5893f91f50c9e50c8886bb60df'
+            'ba77b3478bc32e209b78f694de6f26e0515a2aa51c724e5c1f7b7e46d1d89870')
+
+prepare() {
+  cd ${_realname}-${pkgver} && patch -p1 < ${srcdir}/0001-build.patch && cd ..
+  rm -rf python2-build python3-build
+  cp -r ${_realname}-${pkgver} python2-build
+  cp -r ${_realname}-${pkgver} python3-build
+}
+
+package_python3-cffi() {
+  depends=("${MINGW_PACKAGE_PREFIX}-python3")
+
+  cd ${srcdir}/python3-build
+  MSYS2_ARG_CONV_EXCL="--prefix=;--install-scripts=;--install-platlib=" \
+  ${MINGW_PREFIX}/bin/python3 setup.py install --prefix=${MINGW_PREFIX} \
+    --root="${pkgdir}" --optimize=1
+
+  install -Dm644 LICENSE "${pkgdir}${MINGW_PREFIX}/share/licenses/python3-${_realname}/LICENSE"
+}
+
+package_python2-cffi() {
+  depends=("${MINGW_PACKAGE_PREFIX}-python2")
+
+  cd ${srcdir}/python2-build
+  MSYS2_ARG_CONV_EXCL="--prefix=;--install-scripts=;--install-platlib=" \
+  ${MINGW_PREFIX}/bin/python2 setup.py install --prefix=${MINGW_PREFIX} \
+    --root="${pkgdir}" --optimize=1
+
+  install -Dm644 LICENSE "${pkgdir}${MINGW_PREFIX}/share/licenses/python2-${_realname}/LICENSE"
+}
+
+package_mingw-w64-i686-python2-cffi() {
+  package_python2-cffi
+}
+
+package_mingw-w64-i686-python3-cffi() {
+  package_python3-cffi
+}
+
+package_mingw-w64-x86_64-python2-cffi() {
+  package_python2-cffi
+}
+
+package_mingw-w64-x86_64-python3-cffi() {
+  package_python3-cffi
+}
