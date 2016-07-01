@@ -1,0 +1,13 @@
+diff -upr python2-build/src/_cffi_src/build_openssl.py cryptography-1.4/src/_cffi_src/build_openssl.py
+--- python2-build/src/_cffi_src/build_openssl.py	2016-07-01 16:19:37.000000000 -0300
++++ cryptography-1.4/src/_cffi_src/build_openssl.py	2016-07-01 16:19:50.000000000 -0300
+@@ -18,9 +18,6 @@ def _get_openssl_libraries(platform):
+         return _osx_libraries(
+             os.environ.get("CRYPTOGRAPHY_OSX_NO_LINK_FLAGS")
+         )
+-    elif platform == "win32":
+-        return ["libeay32", "ssleay32", "advapi32",
+-                "crypt32", "gdi32", "user32", "ws2_32"]
+     else:
+         # In some circumstances, the order in which these libs are
+         # specified on the linker command-line is significant;
