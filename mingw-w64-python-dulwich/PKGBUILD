@@ -1,0 +1,55 @@
+# Maintainer: Manuel Naranjo <naranjo.manuel@gmail.com>
+
+_realname=dulwich
+pkgbase=mingw-w64-python-${_realname}
+pkgname=("${MINGW_PACKAGE_PREFIX}-python2-${_realname}" "${MINGW_PACKAGE_PREFIX}-python3-${_realname}")
+pkgver=0.13.0
+pkgrel=1
+pkgdesc='Dulwich is a Python implementation of the Git file formats and protocols, which does not depend on Git itself. (mingw-w64)'
+url='https://www.dulwich.io'
+license=('GPL')
+arch=('any')
+makedepends=("${MINGW_PACKAGE_PREFIX}-python2"
+             "${MINGW_PACKAGE_PREFIX}-python3")
+source=("https://www.dulwich.io/releases/${_realname}-${pkgver}.tar.gz"
+        '0001-inttypes.patch')
+sha256sums=('8ed35334e22cf93e7dcfd5113d8e262041967fe4c3cead5e262c9102f3e63238'
+            '2b0397c1a1055493cd9d4455ac5219731678bb2b4d4f1384fcaa0200045e2383')
+
+prepare() {
+  cd ${srcdir}
+  cd ${_realname}-${pkgver} && patch -p0 < ${srcdir}/0001-inttypes.patch
+  cd ..
+  cp -r ${_realname}-${pkgver} build-python2
+  cp -r ${_realname}-${pkgver} build-python3
+}
+
+package_python3-dulwich() {
+  cd ${srcdir}/build-python3
+  ${MINGW_PREFIX}/bin/python3 setup.py build
+  MSYS2_ARG_CONV_EXCL="--prefix=;--install-scripts=;--install-platlib=" \
+  ${MINGW_PREFIX}/bin/python3 setup.py install --prefix=${MINGW_PREFIX} --root="${pkgdir}"
+}
+
+package_python2-dulwich() {
+  cd ${srcdir}/build-python2
+  ${MINGW_PREFIX}/bin/python2 setup.py build
+  MSYS2_ARG_CONV_EXCL="--prefix=;--install-scripts=;--install-platlib=" \
+  ${MINGW_PREFIX}/bin/python2 setup.py install --prefix=${MINGW_PREFIX} --root="${pkgdir}"
+}
+
+package_mingw-w64-i686-python2-dulwich() {
+  package_python2-dulwich
+}
+
+package_mingw-w64-i686-python3-dulwich() {
+  package_python3-dulwich
+}
+
+package_mingw-w64-x86_64-python2-dulwich() {
+  package_python2-dulwich
+}
+
+package_mingw-w64-x86_64-python3-dulwich() {
+  package_python3-dulwich
+}

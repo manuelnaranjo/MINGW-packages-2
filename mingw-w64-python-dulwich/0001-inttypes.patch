@@ -1,0 +1,39 @@
+diff -uprb ../dulwich-0.13.0/dulwich/_diff_tree.c ./dulwich/_diff_tree.c
+--- ../dulwich-0.13.0/dulwich/_diff_tree.c	2015-12-13 12:34:39.000000000 -0300
++++ ./dulwich/_diff_tree.c	2016-07-01 12:22:17.000000000 -0300
+@@ -17,6 +17,9 @@
+  * MA  02110-1301, USA.
+  */
+ 
++#include <stdint.h>
++typedef long long  intmax_t;
++typedef unsigned long long   uintmax_t;
+ #include <Python.h>
+ #include <sys/stat.h>
+ 
+diff -uprb ../dulwich-0.13.0/dulwich/_objects.c ./dulwich/_objects.c
+--- ../dulwich-0.13.0/dulwich/_objects.c	2015-12-13 12:34:39.000000000 -0300
++++ ./dulwich/_objects.c	2016-07-01 12:21:24.000000000 -0300
+@@ -17,6 +17,9 @@
+  * MA  02110-1301, USA.
+  */
+ 
++#include <stdint.h>
++typedef long long  intmax_t;
++typedef unsigned long long   uintmax_t;
+ #include <Python.h>
+ #include <stdlib.h>
+ #include <sys/stat.h>
+diff -uprb ../dulwich-0.13.0/dulwich/_pack.c ./dulwich/_pack.c
+--- ../dulwich-0.13.0/dulwich/_pack.c	2016-04-18 15:19:22.000000000 -0300
++++ ./dulwich/_pack.c	2016-07-01 12:21:47.000000000 -0300
+@@ -17,6 +17,9 @@
+  * MA  02110-1301, USA.
+  */
+ 
++#include <stdint.h>
++typedef long long  intmax_t;
++typedef unsigned long long   uintmax_t;
+ #include <Python.h>
+ #include <stdint.h>
+ 
