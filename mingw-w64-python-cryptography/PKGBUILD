@@ -1,0 +1,75 @@
+# Contributor: Naranjo Manuel <naranjo.manuel@gmail.com>
+
+_realname=cryptography
+pkgbase=mingw-w64-python-${_realname}
+pkgname=("${MINGW_PACKAGE_PREFIX}-python2-${_realname}" "${MINGW_PACKAGE_PREFIX}-python3-${_realname}")
+_pkgver=1.4
+pkgver="${_pkgver}.0"
+pkgrel=1
+pkgdesc='cryptography is a package designed to expose cryptographic primitives and recipes to Python developers. (mingw-w64)'
+arch=('any')
+url="https://github.com/pyca/${_realname}"
+license=('BSD')
+makedepends=("${MINGW_PACKAGE_PREFIX}-openssl"
+             "${MINGW_PACKAGE_PREFIX}-python3"
+             "${MINGW_PACKAGE_PREFIX}-python3-cffi"
+             "${MINGW_PACKAGE_PREFIX}-python3-pycparser"
+             "${MINGW_PACKAGE_PREFIX}-python2"
+             "${MINGW_PACKAGE_PREFIX}-python2-cffi"
+             "${MINGW_PACKAGE_PREFIX}-python2-pycparser")
+source=("${url}/archive/${_pkgver}.tar.gz"
+        '0001-openssl-link.patch')
+sha256sums=('f724a1e8028744b1ee5e67119d1f2b1d7770253d1e1f68c9edbf3fd411f7a1fc'
+            '394164e565f907e32d5c8c02e455be4bfc2531d152456a9f68eb684edb83fc91')
+
+prepare() {
+  patch -p0 < 0001-openssl-link.patch
+  cp -r ${_realname}-${_pkgver} python2-build
+  cp -r ${_realname}-${_pkgver} python3-build
+}
+
+package_python3-cryptography() {
+  depends=("${MINGW_PACKAGE_PREFIX}-python3")
+
+  cd ${srcdir}/python3-build
+  MSYS2_ARG_CONV_EXCL="--prefix=;--install-scripts=;--install-platlib=" \
+  ${MINGW_PREFIX}/bin/python3 setup.py build --compiler=mingw32
+  MSYS2_ARG_CONV_EXCL="--prefix=;--install-scripts=;--install-platlib=" \
+  ${MINGW_PREFIX}/bin/python3 setup.py install --prefix=${MINGW_PREFIX} \
+    --root="${pkgdir}" --optimize=1
+
+  install -Dm644 LICENSE "${pkgdir}${MINGW_PREFIX}/share/licenses/python3-${_realname}/LICENSE"
+  install -Dm644 LICENSE.APACHE "${pkgdir}${MINGW_PREFIX}/share/licenses/python3-${_realname}/LICENSE.APACHE"
+  install -Dm644 LICENSE.BSD "${pkgdir}${MINGW_PREFIX}/share/licenses/python3-${_realname}/LICENSE.BSD"
+}
+
+package_python2-cryptography() {
+  depends=("${MINGW_PACKAGE_PREFIX}-python2")
+
+  cd ${srcdir}/python2-build
+  MSYS2_ARG_CONV_EXCL="--prefix=;--install-scripts=;--install-platlib=" \
+  ${MINGW_PREFIX}/bin/python2 setup.py build --compiler=mingw32
+  MSYS2_ARG_CONV_EXCL="--prefix=;--install-scripts=;--install-platlib=" \
+  ${MINGW_PREFIX}/bin/python2 setup.py install --prefix=${MINGW_PREFIX} \
+    --root="${pkgdir}" --optimize=1
+
+  install -Dm644 LICENSE "${pkgdir}${MINGW_PREFIX}/share/licenses/python2-${_realname}/LICENSE"
+  install -Dm644 LICENSE.APACHE "${pkgdir}${MINGW_PREFIX}/share/licenses/python3-${_realname}/LICENSE.APACHE"
+  install -Dm644 LICENSE.BSD "${pkgdir}${MINGW_PREFIX}/share/licenses/python3-${_realname}/LICENSE.BSD"
+}
+
+package_mingw-w64-i686-python2-cryptography() {
+  package_python2-cryptography
+}
+
+package_mingw-w64-i686-python3-cryptography() {
+  package_python3-cryptography
+}
+
+package_mingw-w64-x86_64-python2-cryptography() {
+  package_python2-cryptography
+}
+
+package_mingw-w64-x86_64-python3-cryptography() {
+  package_python3-cryptography
+}
