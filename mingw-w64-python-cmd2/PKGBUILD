@@ -1,0 +1,66 @@
+# Maintainer: Manuel Naranjo <naranjo.manuel@gmail.com>
+
+_realname=cmd2
+pkgbase=mingw-w64-python-${_realname}
+pkgname=(
+  "${MINGW_PACKAGE_PREFIX}-python3-${_realname}"
+  "${MINGW_PACKAGE_PREFIX}-python2-${_realname}"
+)
+pkgver=0.6.8
+pkgrel=1
+pkgdesc="Better living through Python with decorators (mingw-w64)"
+arch=('any')
+license=('MIT')
+url="https://github.com/python-cmd2/cmd2"
+makedepends=(
+  "${MINGW_PACKAGE_PREFIX}-python3-setuptools"
+  "${MINGW_PACKAGE_PREFIX}-python2-setuptools"
+)
+source=("https://github.com/python-cmd2/${_realname}/archive/${pkgver}.zip")
+sha512sums=('SKIP')
+
+prepare() {
+  cp -r ${_realname}-${pkgver} ${_realname}-py2
+}
+
+build() {
+  cd ${srcdir}/${_realname}-${pkgver}
+  python3 setup.py build
+
+  cd ${srcdir}/${_realname}-py2
+  python2 setup.py build
+}
+
+package_python3-cmd2() {
+  depends=("${MINGW_PACKAGE_PREFIX}-python3")
+
+  cd ${_realname}-${pkgver}
+  MSYS2_ARG_CONV_EXCL="--prefix=;--install-scripts=;--install-platlib=" \
+  ${MINGW_PREFIX}/bin/python3 setup.py install --root=${pkgdir} --prefix=${MINGW_PREFIX} --optimize=1
+}
+
+package_python2-cmd2() {
+  depends=("${MINGW_PACKAGE_PREFIX}-python2")
+
+  cd ${_realname}-py2
+  MSYS2_ARG_CONV_EXCL="--prefix=;--install-scripts=;--install-platlib=" \
+  ${MINGW_PREFIX}/bin/python2 setup.py install --root=${pkgdir} --prefix=${MINGW_PREFIX} --optimize=1
+}
+
+package_mingw-w64-i686-python2-cmd2() {
+  package_python2-cmd2
+}
+
+package_mingw-w64-i686-python3-cmd2() {
+  package_python3-cmd2
+}
+
+package_mingw-w64-x86_64-python2-cmd2() {
+  package_python2-cmd2
+}
+
+package_mingw-w64-x86_64-python3-cmd2() {
+  package_python3-cmd2
+}
+
+# vim:set ts=2 sw=2 et:
