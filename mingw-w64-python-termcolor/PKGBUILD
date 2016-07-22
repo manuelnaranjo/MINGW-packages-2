@@ -1,0 +1,66 @@
+# Maintainer: Manuel Naranjo <naranjo.manuel@gmail.com>
+
+_realname=termcolor
+pkgbase=mingw-w64-python-${_realname}
+pkgname=(
+  "${MINGW_PACKAGE_PREFIX}-python3-${_realname}"
+  "${MINGW_PACKAGE_PREFIX}-python2-${_realname}"
+)
+pkgver=1.1.0
+pkgrel=1
+pkgdesc="ANSII Color formatting for output in terminal (mingw-w64)"
+arch=('any')
+license=('MIT')
+url="http://pypi.python.org/pypi/termcolor"
+makedepends=(
+  "${MINGW_PACKAGE_PREFIX}-python3-setuptools"
+  "${MINGW_PACKAGE_PREFIX}-python2-setuptools"
+)
+source=("https://pypi.python.org/packages/8a/48/a76be51647d0eb9f10e2a4511bf3ffb8cc1e6b14e9e4fab46173aa79f981/${_realname}-${pkgver}.tar.gz")
+sha512sums=('SKIP')
+
+prepare() {
+  cp -r ${_realname}-${pkgver} ${_realname}-py2
+}
+
+build() {
+  cd ${srcdir}/${_realname}-${pkgver}
+  python3 setup.py build
+
+  cd ${srcdir}/${_realname}-py2
+  python2 setup.py build
+}
+
+package_python3-termcolor() {
+  depends=("${MINGW_PACKAGE_PREFIX}-python3")
+
+  cd ${_realname}-${pkgver}
+  MSYS2_ARG_CONV_EXCL="--prefix=;--install-scripts=;--install-platlib=" \
+  ${MINGW_PREFIX}/bin/python3 setup.py install --root=${pkgdir} --prefix=${MINGW_PREFIX} --optimize=1
+}
+
+package_python2-termcolor() {
+  depends=("${MINGW_PACKAGE_PREFIX}-python2")
+
+  cd ${_realname}-py2
+  MSYS2_ARG_CONV_EXCL="--prefix=;--install-scripts=;--install-platlib=" \
+  ${MINGW_PREFIX}/bin/python2 setup.py install --root=${pkgdir} --prefix=${MINGW_PREFIX} --optimize=1
+}
+
+package_mingw-w64-i686-python2-termcolor() {
+  package_python2-termcolor
+}
+
+package_mingw-w64-i686-python3-termcolor() {
+  package_python3-termcolor
+}
+
+package_mingw-w64-x86_64-python2-termcolor() {
+  package_python2-termcolor
+}
+
+package_mingw-w64-x86_64-python3-termcolor() {
+  package_python3-termcolor
+}
+
+# vim:set ts=2 sw=2 et:
