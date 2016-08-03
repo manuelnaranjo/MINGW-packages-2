@@ -1,0 +1,28 @@
+# Maintainer: Manuel Naranjo <naranjo.manuel@gmail.com>
+
+# special package for building msports.a so it can be linked
+# against it
+
+_realname=msports-dev
+pkgbase=mingw-w64-${_realname}
+pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
+pkgver=0.0.1
+pkgrel=1
+pkgdesc='Package necessary for building against msports'
+arch=('any')
+license=("custom:$pkgname")
+source=('msports.def')
+sha512sums=('SKIP')
+makedepends=("${MINGW_PACKAGE_PREFIX}-binutils")
+
+build() {
+  mkdir -p ${srcdir}/${_realname}-${pkgver}
+  cd ${srcdir}/${_realname}-${pkgver}
+  dlltool -d ../msports.def -k -l libmsports.a
+}
+
+package() {
+  cd ${srcdir}/${_realname}-${pkgver}
+  mkdir -p ${pkgdir}${MINGW_PREFIX}/lib
+  cp libmsports.a ${pkgdir}${MINGW_PREFIX}/lib
+}

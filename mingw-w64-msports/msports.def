@@ -1,0 +1,8 @@
+LIBRARY msports.dll
+EXPORTS
+ComDBClaimPort
+ComDBClose
+ComDBGetCurrentPortUsage
+ComDBOpen
+ComDBReleasePort
+ComDBResizeDatabase
