@@ -4,7 +4,7 @@
 _realname=qt-solutions
 
 pkgbase=mingw-w64-${_realname}-git
-pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}-git"
+pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}-git-release"
 pkgver=r47.ad9bc46
 pkgrel=1
 pkgdesc='Qt5 various components (mingw-w64)'
@@ -31,14 +31,14 @@ build() {
   for cur in ${_components}; do
     plain "Building ${cur} ..."
     local _variant=
-    for _variant in debug release; do
+    for _variant in release; do
       cd ${srcdir}/${_realname}/${cur}
       ./configure -library
 
       ${MINGW_PREFIX}/bin/qmake \
         ./${cur}.pro \
-        CONFIG+=${_variant}
-      make
+        CONFIG+="${_variant}"
+      make ${_variant}
     done
   done
 }
