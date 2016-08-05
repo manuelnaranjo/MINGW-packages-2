@@ -5,7 +5,7 @@ _realname=qt-solutions
 
 pkgbase=mingw-w64-${_realname}-git
 pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}-git"
-pkgver=r39.a558dc7
+pkgver=r47.ad9bc46
 pkgrel=1
 pkgdesc='Qt5 various components (mingw-w64)'
 url='https://qt.gitorious.org/qt-solutions'
@@ -13,7 +13,7 @@ arch=('any')
 depends=("${MINGW_PACKAGE_PREFIX}-qt5")
 makedepends=("${MINGW_PACKAGE_PREFIX}-gcc" "git")
 options=('docs' 'staticlibs' '!strip') # 'debug' '!strip'
-source=("${_realname}"::"git+https://github.com/Alexpux/qt-solutions.git")
+source=("${_realname}"::"git+https://github.com/qtproject/qt-solutions.git")
 sha256sums=('SKIP')
 
 _components="qtpropertybrowser qtservice qtsingleapplication"
@@ -58,4 +58,3 @@ package() {
 
   done
 }
-
