@@ -1,0 +1,39 @@
+# Maintainer: Manuel Naranjo <naranjo.manuel@gmail.com>
+
+_realname=mythes
+pkgbase=mingw-w64-${_realname}
+pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
+pkgver=1.2.4
+pkgrel=1
+pkgdesc="MyThes is a simple thesaurus (mingw-w64)"
+arch=('any')
+url="https://sourceforge.net/projects/hunspell/"
+license=('BSD')
+makedepends=("${MINGW_PACKAGE_PREFIX}-gcc"
+             "${MINGW_PACKAGE_PREFIX}-pkg-config"
+             "${MINGW_PACKAGE_PREFIX}-hunspell"
+             )
+depends=("${MINGW_PACKAGE_PREFIX}-gcc-libs"
+         "${MINGW_PACKAGE_PREFIX}-hunspell")
+source=(${_realname}-${pkgver}.tar.gz::http://downloads.sourceforge.net/project/hunspell/MyThes/${pkgver}/${_realname}-${pkgver}.tar.gz)
+sha256sums=('SKIP')
+
+build() {
+  [[ -d build-${MINGW_CHOST} ]] && rm -rf build-${MINGW_CHOST}
+  mkdir -p build-${MINGW_CHOST}
+  cd build-${MINGW_CHOST}
+
+  ../${_realname}-${pkgver}/configure \
+    --prefix=${MINGW_PREFIX} \
+    --build=${MINGW_CHOST} \
+    --host=${MINGW_CHOST} \
+    --enable-static \
+    --enable-shared
+
+  make
+}
+
+package() {
+  cd "build-${MINGW_CHOST}"
+  make DESTDIR="${pkgdir}" install
+}
