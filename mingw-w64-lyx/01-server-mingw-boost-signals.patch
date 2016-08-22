@@ -1,0 +1,77 @@
+diff -uprN lyx-2.2.1/src/Server.cpp lyx-2.2.1-mine/src/Server.cpp
+--- lyx-2.2.1/src/Server.cpp	2016-07-21 15:34:37.000000000 -0300
++++ lyx-2.2.1-mine/src/Server.cpp	2016-08-22 08:19:45.000000000 -0300
+@@ -58,7 +58,7 @@
+
+ #include "support/bind.h"
+
+-#ifdef _WIN32
++#if 0
+ #include <io.h>
+ #include <QCoreApplication>
+ #endif
+@@ -82,7 +82,7 @@ namespace lyx {
+ //
+ /////////////////////////////////////////////////////////////////////
+
+-#if defined(_WIN32)
++#if 0
+
+ class ReadReadyEvent : public QEvent {
+ public:
+@@ -1211,6 +1211,6 @@ void Server::notifyClient(string const &
+
+ } // namespace lyx
+
+-#ifdef _WIN32
++#if 0
+ #include "moc_Server.cpp"
+ #endif
+diff -uprN lyx-2.2.1/src/Server.h lyx-2.2.1-mine/src/Server.h
+--- lyx-2.2.1/src/Server.h	2016-07-21 15:34:37.000000000 -0300
++++ lyx-2.2.1-mine/src/Server.h	2016-08-22 08:22:46.000000000 -0300
+@@ -16,7 +16,7 @@
+
+ #include <boost/signals/trackable.hpp>
+
+-#ifdef _WIN32
++#if 0
+ #include <windows.h>
+ #include <QObject>
+ #include <QEvent>
+@@ -35,7 +35,7 @@ class Server;
+  This class encapsulates all the dirty communication and thus provides
+  a clean string interface.
+  */
+-#ifndef _WIN32
++#if 1
+ class LyXComm : public boost::signals::trackable {
+ #else
+ class LyXComm : public QObject {
+@@ -95,7 +95,7 @@ public:
+ 	void send(std::string const &);
+
+ 	/// asynch ready-to-be-read notification
+-#ifndef _WIN32
++#if 1
+ 	void read_ready();
+ #else
+ 	void read_ready(DWORD);
+@@ -120,7 +120,7 @@ private:
+ 	/// Load files in another running instance of LyX
+ 	bool loadFilesInOtherInstance();
+
+-#ifndef _WIN32
++#if 1
+ 	/// start a pipe
+ 	int startPipe(std::string const &, bool);
+
+@@ -216,7 +216,7 @@ public:
+
+ private:
+ 	/// Names and number of current clients
+-#ifndef _WIN32
++#if 1
+ 	enum { MAX_CLIENTS = 10 };
+ #else
+ 	enum { MAX_CLIENTS = LyXComm::MAX_CLIENTS };
