@@ -1,0 +1,48 @@
+# Maintainer: Manuel Naranjo <naranjo.manuel@gmail.com>
+
+_realname=inno-setup
+pkgbase=mingw-w64-${_realname}
+pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
+pkgver=5.5.9
+pkgrel=1
+pkgdesc="Inno Setup is a free installer for Windows programs repacked from official installer (mingw-w64)"
+arch=('any')
+url="http://www.jrsoftware.org/isinfo.php"
+license=('custom')
+makedepends=()
+depends=()
+options=('staticlibs' '!strip')
+source=(${_realname}-${pkgver}.exe::http://www.jrsoftware.org/download.php/is.exe?site=1
+        LICENSE.txt::http://www.jrsoftware.org/files/is/license.txt
+        http://constexpr.org/innoextract/files/innoextract-1.6-windows.zip
+        compil32
+        iscc)
+sha256sums=('0432d5d91f769fa39ede83f425458f4f03b03209d650c302c5bf134023431b44'
+            '95d87173700ce168338234ac95a9bdd3118ba1c8a5623c82cebfa101f50fd97b'
+            '33d61133401bb6a919b299f282b5e8f0aada67253460b0c11c85b56cdb1ea0d3'
+            'e53da730183c338c4b53e9604ab8a3831f7095e582ea6d5e63c382ebbe6fad2c'
+            '94ebe41275b84123d7159a29efcc71530f9a6b4b57d52220e3a33ace1c81e919')
+
+build() {
+  cd ${srcdir}
+
+  rm -rf "build-${MINGW_CHOST}"
+  mkdir "build-${MINGW_CHOST}"
+  cd "build-${MINGW_CHOST}"
+  ../innoextract.exe ../${_realname}-${pkgver}.exe
+}
+
+package() {
+  cd "${pkgdir}"
+
+  mkdir -p "${pkgdir}${MINGW_PREFIX}/share/inno-setup"
+  mkdir -p "${pkgdir}${MINGW_PREFIX}/bin"
+
+  for f in $(ls "${srcdir}/build-${MINGW_CHOST}/app/"); do
+    cp -r "${srcdir}/build-${MINGW_CHOST}/app/${f}" "${pkgdir}${MINGW_PREFIX}/share/inno-setup/"
+  done
+
+  cp "${srcdir}/LICENSE.txt" "${pkgdir}${MINGW_PREFIX}/share/inno-setup/"
+  cp "${srcdir}/compil32" "${pkgdir}${MINGW_PREFIX}/bin/"
+  cp "${srcdir}/iscc" "${pkgdir}${MINGW_PREFIX}/bin/"
+}

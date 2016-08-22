@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# wrapper script for launching ISCC from Inno Setup package
+
+ME="${BASH_SOURCE[0]}"
+DIR="$(dirname ${ME})"
+
+exec ${DIR}/../share/inno-setup/ISCC.exe "$@"
