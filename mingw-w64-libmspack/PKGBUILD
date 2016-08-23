@@ -1,0 +1,51 @@
+# Maintainer: Manuel Naranjo <naranjo.manuel@gmail.com>
+
+_realname=libmspack
+pkgbase=mingw-w64-${_realname}
+pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
+pkgver=0.5alpha
+pkgrel=1
+pkgdesc="libmspack is a portable library for some loosely related Microsoft compression formats (mingw-w64)"
+arch=('any')
+url="http://www.cabextract.org.uk/libmspack/"
+license=('LGPLv2')
+makedepends=("${MINGW_PACKAGE_PREFIX}-gcc")
+depends=()
+#options=('staticlibs' '!strip')
+source=(
+  "http://www.cabextract.org.uk/${_realname}/${_realname}-${pkgver}.tar.gz"
+  LICENSE::'https://www.gnu.org/licenses/lgpl.txt'
+  '01-fix-mkdir.patch'
+)
+
+sha256sums=(
+  '8967f275525f5067b364cee43b73e44d0433668c39f9376dfff19f653d1c8110'
+  'da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768'
+  'c43b71e5fd3a43d67da390d46c14e492fc70ced602852fe8e1530251f5b70bb4'
+)
+
+prepare() {
+  cd "${srcdir}/${_realname}-${pkgver}"
+
+  patch -p1 -i "${srcdir}/01-fix-mkdir.patch"
+}
+
+build() {
+  [[ -d "build-${MINGW_CHOST}" ]] && rm -rf "build-${MINGW_CHOST}"
+  mkdir -p ${srcdir}/build-${MINGW_CHOST}
+  cd ${srcdir}/build-${MINGW_CHOST}
+
+  ../${_realname}-${pkgver}/configure \
+    --prefix=${MINGW_PREFIX} \
+    --build=${MINGW_CHOST} \
+    --host=${MINGW_CHOST} \
+    --target=${MINGW_CHOST}
+
+  make
+}
+
+package() {
+  cd "${srcdir}/build-${MINGW_CHOST}"
+  make DESTDIR=${pkgdir} install
+  install -Dm644 ${srcdir}/LICENSE ${pkgdir}${MINGW_PREFIX}/share/licenses/${_realname}/LICENSE
+}
