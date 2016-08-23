@@ -1,0 +1,69 @@
+# Maintainer: Manuel Naranjo <naranjo.manuel@gmail.com>
+
+_realname=log4cxx
+pkgbase=mingw-w64-${_realname}
+pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
+pkgver=0.10.0
+pkgrel=1
+pkgdesc="Apache log4cxx is a logging framework for C++ patterned after Apache log4j (mingw-w64)"
+arch=('any')
+url="https://logging.apache.org/log4cxx/"
+license=('APACHEv2')
+makedepends=("${MINGW_PACKAGE_PREFIX}-gcc"
+             "${MINGW_PACKAGE_PREFIX}-pkg-config"
+             "${MINGW_PACKAGE_PREFIX}-apr"
+             'git'
+             )
+depends=()
+#options=('staticlibs' '!strip')
+source=(
+  git://git.apache.org/${_realname}.git
+  '0001-test-Adding-missing-include.patch'
+  '0002-test-Adding-missing-static_cast.patch'
+  '0003-install-don-t-install-private-header-twice.patch'
+)
+
+sha256sums=(
+  'SKIP'
+  'dd34f8f7b7efbc37e6e989a4a68e1c3e43800d9da90c0eee807fa078c901f14b'
+  '4f5ab959d2f4366f052315339eba6d3223700fdda8f52824de59dfaa71681901'
+  '97583d7d14cc6ae9d06274297d215b2ee951251e0eee7527107c6ff641229ce3'
+)
+
+prepare() {
+  cd "${srcdir}/${_realname}"
+
+  git clean -x -d -f
+
+  git reset --hard v0_10_0
+
+  # we  need to apply this patch because of a gcc6.X problem, once
+  # a new log4cxx package is available this problem should be gone
+  git cherry-pick 5b75dfa78b2c5e95296cee0201bc045ef7264ed0
+
+  git am ../0001-test-Adding-missing-include.patch
+  git am ../0002-test-Adding-missing-static_cast.patch
+  git am ../0003-install-don-t-install-private-header-twice.patch
+
+  bash autogen.sh
+}
+
+build() {
+  [[ -d "build-${MINGW_CHOST}" ]] && rm -rf "build-${MINGW_CHOST}"
+  mkdir -p ${srcdir}/build-${MINGW_CHOST}
+  cd ${srcdir}/build-${MINGW_CHOST}
+
+  ../${_realname}/configure \
+    --prefix=${MINGW_PREFIX} \
+    --build=${MINGW_CHOST} \
+    --host=${MINGW_CHOST} \
+    --target=${MINGW_CHOST}
+
+  make -j 5
+}
+
+package() {
+  cd "${srcdir}/build-${MINGW_CHOST}"
+  make DESTDIR=${pkgdir} install
+  install -Dm644 ${srcdir}/${_realname}/LICENSE ${pkgdir}${MINGW_PREFIX}/share/licenses/${_realname}/LICENSE
+}

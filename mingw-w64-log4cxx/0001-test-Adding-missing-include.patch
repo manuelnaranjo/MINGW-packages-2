@@ -1,0 +1,25 @@
+From d439634e1023beb33f1392128ec3cc1083a88376 Mon Sep 17 00:00:00 2001
+From: "Naranjo, Manuel" <naranjo.manuel@gmail.com>
+Date: Tue, 23 Aug 2016 06:39:54 -0700
+Subject: [PATCH 1/2] [test] Adding missing include
+
+gcc 6.x was bitching of strcmp not been available
+---
+ src/examples/cpp/console.cpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/examples/cpp/console.cpp b/src/examples/cpp/console.cpp
+index 6a01d8a..a673a10 100755
+--- a/src/examples/cpp/console.cpp
++++ b/src/examples/cpp/console.cpp
+@@ -22,6 +22,7 @@
+ #include <log4cxx/logmanager.h>
+ #include <iostream>
+ #include <locale.h>
++#include <cstring>
+ 
+ using namespace log4cxx;
+ using namespace log4cxx::helpers;
+-- 
+2.9.1
+

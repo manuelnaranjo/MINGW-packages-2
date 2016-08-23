@@ -1,0 +1,25 @@
+From 8fc23463d1d66a276bee1fe74c93e32982c676d8 Mon Sep 17 00:00:00 2001
+From: "Naranjo, Manuel" <naranjo.manuel@gmail.com>
+Date: Tue, 23 Aug 2016 06:56:06 -0700
+Subject: [PATCH] [install] don't install private header twice
+
+---
+ src/main/include/log4cxx/private/Makefile.am | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/main/include/log4cxx/private/Makefile.am b/src/main/include/log4cxx/private/Makefile.am
+index 3a896ea..474e31d 100644
+--- a/src/main/include/log4cxx/private/Makefile.am
++++ b/src/main/include/log4cxx/private/Makefile.am
+@@ -14,7 +14,7 @@
+ # limitations under the License.
+ #
+ privateincdir = $(includedir)/log4cxx/private
+-privateinc_HEADERS= $(top_builddir)/src/main/include/log4cxx/private/*.h log4cxx_private.h
++privateinc_HEADERS= $(top_builddir)/src/main/include/log4cxx/private/*.h
+ DISTCLEANFILES = log4cxx_private.h
+ EXTRA_DIST = log4cxx_private.hw
+ 
+-- 
+2.9.1
+
