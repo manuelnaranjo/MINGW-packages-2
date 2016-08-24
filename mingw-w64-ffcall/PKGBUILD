@@ -1,0 +1,70 @@
+# Maintainer: Manuel Naranjo <naranjo.manuel@gmail.com>
+
+# Ported from archlinux, original authors:
+# Maintainer: Vesa Kaihlavirta <vegai@iki.fi>
+# Contributor: Michael Baehr <usemike@spamblocked.com>
+
+_realname=ffcall
+pkgbase=mingw-w64-${_realname}
+pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
+pkgver=1.10
+pkgrel=6
+pkgdesc="C library for implementing foreign function calls in embedded interpreters (mingw-w64)"
+arch=('any')
+url="http://www.gnu.org/software/libffcall/"
+license=('GPL2')
+options=('!makeflags')
+source=(http://www.haible.de/bruno/gnu/${_realname}-${pkgver}.tar.gz
+        01-make-tests.patch)
+sha256sums=(
+  '6f1b5b8fc84b2c0051637fb1e4e4f8b975f5f98bff8fe053c1992347baa4983d'
+  '5af4b60a5022e8f71021eea9d7096680b7d2db259c3994aa81185e23fe5d37ca'
+)
+
+prepare() {
+  cd "${srcdir}/${_realname}-${pkgver}"
+
+  patch -p1 -i "${srcdir}/01-make-tests.patch"
+}
+
+build() {
+  [[ -d "${srcdir}/build-${MINGW_CHOST}" ]] && rm -rf "${srcdir}/build-${MINGW_CHOST}"
+  cp -r "${srcdir}/${_realname}-${pkgver}" "${srcdir}/build-${MINGW_CHOST}"
+
+  cd "${srcdir}/build-${MINGW_CHOST}"
+
+  make -f Makefile.mingw32 \
+    HOST=${MINGW_CHOST} \
+    prefix=${MINGW_PREFIX} \
+    exec_prefix=${MINGW_PREFIX}/bin \
+    CC=${MINGW_CHOST}-gcc \
+    CPP="${MINGW_CHOST}-gcc -E" \
+    AR=${MINGW_CHOST}-gcc-ar
+}
+
+check() {
+  cd "${srcdir}/build-${MINGW_CHOST}"
+
+  make -f Makefile.mingw32 \
+    HOST=${MINGW_CHOST} \
+    prefix=${MINGW_PREFIX} \
+    exec_prefix=${MINGW_PREFIX}/bin \
+    CC=${MINGW_CHOST}-gcc \
+    CPP="${MINGW_CHOST}-gcc -E" \
+    AR=${MINGW_CHOST}-gcc-ar \
+    check
+}
+
+package() {
+  cd "${srcdir}/build-${MINGW_CHOST}"
+  mkdir -p "${pkgdir}${MINGW_PREFIX}/include"
+  mkdir -p "${pkgdir}${MINGW_PREFIX}/include/"
+  mkdir -p "${pkgdir}${MINGW_PREFIX}/lib"
+  mkdir -p "${pkgdir}${MINGW_PREFIX}/share/licenses/${_realname}"
+  cp COPYING "${pkgdir}${MINGW_PREFIX}/share/licenses/${_realname}/LICENSE"
+  cp $(find . -maxdepth 2 -name '*.a') "${pkgdir}${MINGW_PREFIX}/lib"
+  cp avcall/avcall.h "${pkgdir}${MINGW_PREFIX}/include"
+  cp callback/{callback.h,vacall_r.h,trampoline_r.h} "${pkgdir}${MINGW_PREFIX}/include"
+  cp trampoline/trampoline.h "${pkgdir}${MINGW_PREFIX}/include"
+  cp vacall/vacall.h "${pkgdir}${MINGW_PREFIX}/include"
+}
