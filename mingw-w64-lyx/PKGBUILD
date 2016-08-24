@@ -4,7 +4,7 @@ _realname=lyx
 pkgbase=mingw-w64-${_realname}
 pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
 pkgver=2.2.1
-pkgrel=1
+pkgrel=2
 pkgdesc="LyX - The Document Processor (mingw-w64)"
 arch=('any')
 url="http://www.lyx.org/"
@@ -22,12 +22,13 @@ makedepends=("bc"
              "${MINGW_PACKAGE_PREFIX}-zlib"
              )
 depends=("${MINGW_PACKAGE_PREFIX}-qt5"
-         "${MINGW_PACKAGE_PREFIX}-boost")
+         "${MINGW_PACKAGE_PREFIX}-boost"
+         "${MINGW_PACKAGE_PREFIX}-miktex-portable")
 source=(${_realname}-${pkgver}.tar.xz::ftp://ftp.lyx.org/pub/${_realname}/stable/2.2.x/${_realname}-${pkgver}.tar.xz
         '01-server-mingw-boost-signals.patch')
 sha256sums=('db6b722f4526d44e09609adcacb6acef38eb7a11c7cde91ffe0d1d54ef94740f'
             '684edbb971418ed7cdce4da09efef7a534ffa7189511be87180c201d82fa6b66')
-
+install='install.sh'
 prepare() {
   cd ${srcdir}/${_realname}-${pkgver}
   patch -p1 -i ${srcdir}/01-server-mingw-boost-signals.patch
