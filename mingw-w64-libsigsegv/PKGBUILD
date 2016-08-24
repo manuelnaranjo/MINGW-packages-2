@@ -1,0 +1,37 @@
+# Maintainer: Manuel Naranjo <naranjo.manuel@gmail.com>
+
+# Ported from archlinux, original authors:
+# Maintainer: Ronald van Haren <ronald.archlinux.org>
+# Contributor: Johannes Weiner <hannes@saeurebad.de>
+
+_realname=libsigsegv
+pkgbase=mingw-w64-${_realname}
+pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
+pkgver=2.10
+pkgrel=3
+arch=('any')
+pkgdesc="Page fault detection library"
+url="http://www.gnu.org/software/libsigsegv/"
+license=('GPL2')
+depends=("${MINGW_PACKAGE_PREFIX}-gcc")
+source=("http://ftp.gnu.org/gnu/${pkgname}/${_realname}-${pkgver}.tar.gz")
+sha1sums=('b75a647a9ebda70e7a3b33583efdd550e0eac094')
+
+build() {
+  [[ -d "build-${MINGW_CHOST}" ]] && rm -rf "build-${MINGW_CHOST}"
+  mkdir -p ${srcdir}/build-${MINGW_CHOST}
+  cd ${srcdir}/build-${MINGW_CHOST}
+
+  ../${_realname}-${pkgver}/configure \
+    --prefix=${MINGW_PREFIX} \
+    --build=${MINGW_CHOST} \
+    --host=${MINGW_CHOST} \
+    --target=${MINGW_CHOST} \
+    --enable-shared
+  make
+}
+
+package() {
+  cd ${srcdir}/build-${MINGW_CHOST}
+  make DESTDIR=${pkgdir} install
+}
