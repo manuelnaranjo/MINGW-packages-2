@@ -1,0 +1,63 @@
+# Contributor: Naranjo Manuel <naranjo.manuel@gmail.com>
+
+_realname=requests-toolbelt
+pkgbase=mingw-w64-python-${_realname}
+pkgname=("${MINGW_PACKAGE_PREFIX}-python2-${_realname}" "${MINGW_PACKAGE_PREFIX}-python3-${_realname}")
+pkgver=0.7.0
+pkgrel=1
+pkgdesc='A toolbelt of useful classes and functions to be used with python-requests. (mingw-w64)'
+arch=('any')
+url='https://toolbelt.readthedocs.org/'
+license=('APACHEv2')
+makedepends=("${MINGW_PACKAGE_PREFIX}-python3"
+             "${MINGW_PACKAGE_PREFIX}-python3-requests"
+             "${MINGW_PACKAGE_PREFIX}-python2"
+             "${MINGW_PACKAGE_PREFIX}-python2-requests"
+             )
+source=("https://github.com/sigmavirus24/${_realname}/archive/${pkgver}.zip")
+sha256sums=('61bef19f7d1ead5ec338fd629262563fd89ab5a63906346455cf9a822246914f')
+noextract=(${pkgver}.zip)
+
+prepare() {
+  [[ -d ${srcdir}/${_realname}-${pkgver} ]] && rm -rf ${srcdir}/${_realname}-${pkgver}
+  mkdir -p ${srcdir}
+  cd ${srcdir}
+  unzip ${pkgver}.zip || true
+
+  cp -r ${_realname}-${pkgver} python2-build
+  cp -r ${_realname}-${pkgver} python3-build
+}
+
+package_python3-requests-toolbelt() {
+  depends=("${MINGW_PACKAGE_PREFIX}-python3-requests-toolbelt")
+
+  cd ${srcdir}/python3-build
+  MSYS2_ARG_CONV_EXCL="--prefix=;--install-scripts=;--install-platlib=" \
+  ${MINGW_PREFIX}/bin/python3 setup.py install --prefix=${MINGW_PREFIX} \
+    --root="${pkgdir}" --optimize=1
+}
+
+package_python2-requests-toolbelt() {
+  depends=("${MINGW_PACKAGE_PREFIX}-python2-requests-toolbelt")
+
+  cd ${srcdir}/python2-build
+  MSYS2_ARG_CONV_EXCL="--prefix=;--install-scripts=;--install-platlib=" \
+  ${MINGW_PREFIX}/bin/python2 setup.py install --prefix=${MINGW_PREFIX} \
+    --root="${pkgdir}" --optimize=1
+}
+
+package_mingw-w64-i686-python2-requests-toolbelt() {
+  package_python2-requests-toolbelt
+}
+
+package_mingw-w64-i686-python3-requests-toolbelt() {
+  package_python3-requests-toolbelt
+}
+
+package_mingw-w64-x86_64-python2-requests-toolbelt() {
+  package_python2-requests-toolbelt
+}
+
+package_mingw-w64-x86_64-python3-requests-toolbelt() {
+  package_python3-requests-toolbelt
+}
