@@ -1,0 +1,93 @@
+# Maintainer: Manuel Naranjo <naranjo.manuel@gmail.com>
+
+_realname=gitpython
+
+pkgbase=mingw-w64-${_realname}-git
+pkgbase=mingw-w64-python-${_realname}
+pkgname=("${MINGW_PACKAGE_PREFIX}-python2-${_realname}"
+         "${MINGW_PACKAGE_PREFIX}-python3-${_realname}")
+pkgver=2.0.8
+pkgrel=1
+pkgdesc="GitPython is a python library used to interact with git repositories, high-level like git-porcelain, or low-level like git-plumbing. (mingw-w64)"
+url="http://gitpython.readthedocs.io"
+arch=('any')
+license=('BSD')
+makedepends=("${MINGW_PACKAGE_PREFIX}-python2"
+             "${MINGW_PACKAGE_PREFIX}-python3"
+             "${MINGW_PACKAGE_PREFIX}-python3-setuptools"
+             "${MINGW_PACKAGE_PREFIX}-python2-setuptools")
+makedepends=('git')
+source=("git://github.com/gitpython-developers/GitPython")
+sha256sums=('SKIP')
+
+prepare() {
+  cd ${_realname}
+  git reset --hard ${pkgver}
+  git submodule update --init --recursive
+  cd "$srcdir"/
+  for builddir in python{2,3}-build; do
+    rm -rf $builddir | true
+    cp -r "${_realname}" "${builddir}"
+    pushd "${builddir}"
+    popd
+  done
+}
+
+build() {
+  for pver in {2,3}; do
+    msg "Python ${pver} test for ${CARCH}"
+    cd "${srcdir}/python${pver}-build"
+    ${MINGW_PREFIX}/bin/python${pver} setup.py build
+    cd git/ext/gitdb
+    ${MINGW_PREFIX}/bin/python${pver} setup.py build
+    cd gitdb/ext/smmap
+    ${MINGW_PREFIX}/bin/python${pver} setup.py build
+
+  done
+}
+
+package_python3-gitpython() {
+  cd $_realname
+  MSYS2_ARG_CONV_EXCL="--prefix=;--install-scripts=;--install-platlib=" \
+    ${MINGW_PREFIX}/bin/python3 setup.py install --prefix=${MINGW_PREFIX} \
+      --root="${pkgdir}" --optimize=1
+  cd git/ext/gitdb
+  MSYS2_ARG_CONV_EXCL="--prefix=;--install-scripts=;--install-platlib=" \
+    ${MINGW_PREFIX}/bin/python3 setup.py install --prefix=${MINGW_PREFIX} \
+      --root="${pkgdir}" --optimize=1
+  cd gitdb/ext/smmap
+  MSYS2_ARG_CONV_EXCL="--prefix=;--install-scripts=;--install-platlib=" \
+    ${MINGW_PREFIX}/bin/python3 setup.py install --prefix=${MINGW_PREFIX} \
+      --root="${pkgdir}" --optimize=1
+}
+
+package_python2-gitpython() {
+  cd $_realname
+  MSYS2_ARG_CONV_EXCL="--prefix=;--install-scripts=;--install-platlib=" \
+    ${MINGW_PREFIX}/bin/python2 setup.py install --prefix=${MINGW_PREFIX} \
+      --root="${pkgdir}" --optimize=1
+  cd git/ext/gitdb
+  MSYS2_ARG_CONV_EXCL="--prefix=;--install-scripts=;--install-platlib=" \
+    ${MINGW_PREFIX}/bin/python2 setup.py install --prefix=${MINGW_PREFIX} \
+      --root="${pkgdir}" --optimize=1
+  cd gitdb/ext/smmap
+  MSYS2_ARG_CONV_EXCL="--prefix=;--install-scripts=;--install-platlib=" \
+    ${MINGW_PREFIX}/bin/python2 setup.py install --prefix=${MINGW_PREFIX} \
+      --root="${pkgdir}" --optimize=1
+}
+
+package_mingw-w64-i686-python2-gitpython() {
+  package_python2-gitpython
+}
+
+package_mingw-w64-i686-python3-gitpython() {
+  package_python3-gitpython
+}
+
+package_mingw-w64-x86_64-python2-gitpython() {
+  package_python2-gitpython
+}
+
+package_mingw-w64-x86_64-python3-gitpython() {
+  package_python3-gitpython
+}
