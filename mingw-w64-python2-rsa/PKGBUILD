@@ -1,0 +1,32 @@
+# Maintainer: Manuel Naranjo <naranjo.manuel@gmail.com>
+
+_realname=rsa
+pkgbase=mingw-w64-${_realname}
+pkgname=("${MINGW_PACKAGE_PREFIX}-python2-${_realname}")
+pkgver=3.4.2
+pkgrel=1
+pkgdesc="Pure-Python RSA implementation. (mingw-w64)"
+arch=('any')
+license=('ApacheV2')
+url="https://aws.amazon.com/cli/"
+depends=(
+  "${MINGW_PACKAGE_PREFIX}-python2"
+  "${MINGW_PACKAGE_PREFIX}-python2-pyasn1"
+  )
+source=(https://github.com/sybrenstuvel/python-rsa/archive/version-${pkgver}.tar.gz)
+sha256sums=('a25e4847ee24ec94af94ecd6a721f869be1136ffbc7df885dfd851dd6c948269')
+
+prepare() {
+  cd "${srcdir}/python-rsa-version-${pkgver}"
+}
+
+build() {
+  cd "${srcdir}/python-rsa-version-${pkgver}"
+  ${MINGW_PREFIX}/bin/python2 setup.py build
+}
+
+package() {
+  cd "${srcdir}/python-rsa-version-${pkgver}"
+  MSYS2_ARG_CONV_EXCL="--prefix=;--install-scripts=;--install-platlib=;--install-purelib=;--install-data=" \
+    ${MINGW_PREFIX}/bin/python2 setup.py install --prefix=${MINGW_PREFIX} --root="${pkgdir}" --optimize=1
+}

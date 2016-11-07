@@ -1,0 +1,32 @@
+# Maintainer: Manuel Naranjo <naranjo.manuel@gmail.com>
+
+_realname=jmespath
+pkgbase=mingw-w64-${_realname}
+pkgname=("${MINGW_PACKAGE_PREFIX}-python2-${_realname}")
+pkgver=0.9.0
+pkgrel=1
+pkgdesc="JMESPath is a query language for JSON. (mingw-w64)"
+arch=('any')
+license=('ApacheV2')
+url="https://github.com/jmespath/jmespath.py"
+depends=(
+  "${MINGW_PACKAGE_PREFIX}-python2"
+  "${MINGW_PACKAGE_PREFIX}-python2-nose"
+)
+source=(https://github.com/jmespath/jmespath.py/archive/${pkgver}.tar.gz)
+sha256sums=('64ba1d91bafef53b730d9eb696aa4a74df3dc5b6ff728c5563069382936da860')
+
+prepare() {
+  cd "${srcdir}/jmespath.py-${pkgver}"
+}
+
+build() {
+  cd "${srcdir}/jmespath.py-${pkgver}"
+  ${MINGW_PREFIX}/bin/python2 setup.py build
+}
+
+package() {
+  cd "${srcdir}/jmespath.py-${pkgver}"
+  MSYS2_ARG_CONV_EXCL="--prefix=;--install-scripts=;--install-platlib=;--install-purelib=;--install-data=" \
+    ${MINGW_PREFIX}/bin/python2 setup.py install --prefix=${MINGW_PREFIX} --root="${pkgdir}" --optimize=1
+}
