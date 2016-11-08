@@ -4,7 +4,7 @@ _realname=awscli
 pkgbase=mingw-w64-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-python2-${_realname}")
 pkgver=1.11.13
-pkgrel=1
+pkgrel=2
 pkgdesc="Universal Command Line Environment for AWS. (mingw-w64)"
 arch=('any')
 license=('ApacheV2')
@@ -15,6 +15,8 @@ depends=(
   "${MINGW_PACKAGE_PREFIX}-python2-botocore"
   "${MINGW_PACKAGE_PREFIX}-python2-s3transfer"
   "${MINGW_PACKAGE_PREFIX}-python2-jmespath"
+  "${MINGW_PACKAGE_PREFIX}-python2-docutils"
+  "${MINGW_PACKAGE_PREFIX}-python2-futures"
   )
 source=(https://github.com/aws/aws-cli/archive/${pkgver}.tar.gz)
 sha256sums=('4d1a3662be98d3b5f8bc444f42ecaec35beb31b43a57f7a4b4ceeff4990fe2ff')
@@ -28,8 +30,20 @@ build() {
   ${MINGW_PREFIX}/bin/python2 setup.py build
 }
 
+fix_header() {
+  tail -n +2 $1 > ${1}.temp
+  echo \#\!${MINGW_PREFIX}/bin/python2 > ${1}
+  cat ${1}.temp >> ${1}
+  rm ${1}.temp
+  chmod +x ${1}
+}
+
 package() {
   cd "${srcdir}/aws-cli-${pkgver}"
   MSYS2_ARG_CONV_EXCL="--prefix=;--install-scripts=;--install-platlib=;--install-purelib=;--install-data=" \
     ${MINGW_PREFIX}/bin/python2 setup.py install --prefix=${MINGW_PREFIX} --root="${pkgdir}" --optimize=1
+  rm ${pkgdir}${MINGW_PREFIX}/bin/*.cmd
+
+  fix_header ${pkgdir}${MINGW_PREFIX}/bin/aws
+  fix_header ${pkgdir}${MINGW_PREFIX}/bin/aws_completer
 }
