@@ -1,0 +1,36 @@
+# Maintainer: Manuel Naranjo <naranjo.manuel@gmail.com>
+
+_realname=futures
+pkgbase=mingw-w64-python-${_realname}
+pkgname=("${MINGW_PACKAGE_PREFIX}-python2-${_realname}")
+pkgver=3.0.5
+pkgrel=1
+pkgdesc='Backport of the concurrent.futures package from Python 3.2 (mingw-w64)'
+arch=('any')
+url='https://pypi.python.org/pypi/futures'
+license=('BSD')
+makedepends=("${MINGW_PACKAGE_PREFIX}-python2")
+source=("https://github.com/agronholm/pythonfutures/archive/${pkgver}.tar.gz")
+sha256sums=('a7086ddf3c36203da7816f7e903ce43d042831f41a9705bc6b4206c574fcb765')
+
+prepare() {
+  cd "${srcdir}"
+  cp -r pythonfutures-${pkgver} python2-build
+}
+
+package_python2-futures() {
+  depends=("${MINGW_PACKAGE_PREFIX}-python2")
+
+  cd ${srcdir}/python2-build
+  MSYS2_ARG_CONV_EXCL="--prefix=;--install-scripts=;--install-platlib=" \
+  ${MINGW_PREFIX}/bin/python2 setup.py install --prefix=${MINGW_PREFIX} \
+    --root="${pkgdir}" --optimize=1
+}
+
+package_mingw-w64-i686-python2-futures() {
+  package_python2-futures
+}
+
+package_mingw-w64-x86_64-python2-futures() {
+  package_python2-futures
+}
